@@ -1,0 +1,17 @@
+Revision history for Perl extension Lingua::EN::Sentence.
+
+0.01  Thu Feb 22 12:16:17 2001
+	- original version; 
+0.02  Fri Feb 23 14:25:01 2001
+	(Thanks to Itai Nahshon for his comments!!)
+	- Supporting 'no' abbreviation.
+	- Exporting OK set_acronyms(),get_acronyms().
+	- Don't break on "." and a-like...
+	- Fixed bug causing wrong breaking sentence if abbreviation is the first word.
+0.03  Sun Feb 25 18:00:01 2001
+	(Thanks to Offer Kaye for his comments about the documentation)
+	- Changes in the documentation.
+	- Build package looks different now to support CPAN installer.
+	- EOS changed to something which is \W.
+	- Added get_EOS() set_EOS() to get/set the end-of-sentence mark.
+	- Added a test for the installation.
