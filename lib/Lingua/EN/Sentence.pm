@@ -101,7 +101,7 @@ Feel free to suggest such lists.
 
 =head1 AUTHOR
 
-Shlomo Yona E<lt>Shlomo.Yona@Siftology.comE<gt>
+Shlomo Yona shlomo@cs.haifa.ac.il
 
 =head1 COPYRIGHT
 
@@ -142,7 +142,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $LOC $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.24';
+$VERSION = '0.25';
 
 # LC_CTYPE now in locale "French, Canada, codeset ISO 8859-1"
 $LOC=setlocale(LC_CTYPE, "fr_CA.ISO8859-1"); 

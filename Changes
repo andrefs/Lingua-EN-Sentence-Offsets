@@ -74,3 +74,5 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	- Added some abbreviations
 0.24 Mon Sep 23 12:30:02 2002
 	- Changing the "rights" notice.
+0.25 Tue Sep 24 13:28:33 IDT 2002
+	- changed the email address.
