@@ -55,3 +55,6 @@ Revision history for Perl extension Lingua::EN::Sentence.
 0.19 Sun Dec 23 09:26:39 2001
 	- Added some more abbreviations.
 	- Trying not to break: text . . some more text
+0.20 Wed Dec 26 09:43:09 2001
+	- Break at the dot: concretizar-se-á. Astiazaram
+	- Fixed bugs with abbreviation 'no.'.

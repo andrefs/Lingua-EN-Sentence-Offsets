@@ -81,7 +81,7 @@ Currently supported acronym lists are:
 		'Tenn', 'Tex', 'Ut', 'Vt', 'Va', 'Wash', 'Wis', 'Wisc', 'Wy',
 		'Wyo', 'USAFA', 'Alta' , 'Man', 'Ont', 'Qué', 'Sask', 'Yuk')
 	MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec', 'sept')
-	MISC ( 'vs', 'etc', 'no' )
+	MISC ( 'vs', 'etc' )
 
 If I come across a good general-purpose list - I'll incorporate it into this module.
 Feel free to suggest such lists. 
@@ -135,7 +135,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.19';
+$VERSION = '0.20';
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( get_sentences 
 		add_acronyms get_acronyms set_acronyms
@@ -160,7 +160,7 @@ my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
 		'Tenn', 'Tex', 'Ut', 'Vt', 'Va', 'Wash', 'Wis', 'Wisc', 'Wy',
 		'Wyo', 'USAFA', 'Alta' , 'Man', 'Ont', 'Qué', 'Sask', 'Yuk');
 my @MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','sept');
-my @MISC = ( 'vs', 'etc', 'no' );
+my @MISC = ( 'vs', 'etc' );
 
 @ABBREVIATIONS = (@PEOPLE, @ARMY, @INSTITUTES, @COMPANIES, @PLACES, @MONTHS, @MISC ); 
 
@@ -243,8 +243,8 @@ sub remove_false_end_of_sentence {
 ##	$marked_segment=~s/(\s\w$PAP)$EOS/$1/sg; 
 ##	## don't do u.s.a.
 ##	$marked_segment=~s/(\.\w$PAP)$EOS/$1/sg; 
-	$marked_segment=~s/(\W\w$PAP)$EOS/$1/sg;
-	$marked_segment=~s/(\W\w$P)$EOS/$1/sg;         
+	$marked_segment=~s/([^-\w]\w$PAP)$EOS/$1/sg;
+	$marked_segment=~s/([^-\w]\w$P)$EOS/$1/sg;         
 
 	# don't split |John P. Stenbit| into |John P.| and |Stenbit|
 	$marked_segment=~s/([A-Z]\w+\s+\S$P\s*)$EOS(\s*[A-Z])/$1$2/sg; 
@@ -266,6 +266,9 @@ sub remove_false_end_of_sentence {
 
 	# don't break: text . . some more text.
 	$marked_segment=~s/(\s\.\s)$EOS(\s*)/$1$2/sg;
+
+	# don't break: no. 1
+	$marked_segment=~s/(no$P)$EOS(\s+\d)/$1$2/gsi;
 
 	$marked_segment=~s/(\s$PAP)$EOS/$1/sg;
 	return $marked_segment;
