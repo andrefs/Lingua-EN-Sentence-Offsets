@@ -29,4 +29,5 @@ Revision history for Perl extension Lingua::EN::Sentence.
 0.09 Thu Aug 21 08:11:07 2001
 	- More abbreviations
 	- Fixed bug where single letter before '.'/'?'/'!' didn't cause insertion of $EOS
-
+0.10 Thu Aug 28 15:07:47 2001
+	- Fixed bug when processing stuff like "   U.S.  "
