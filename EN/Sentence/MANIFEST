@@ -1,0 +1,7 @@
+Changes
+INSTALL
+MANIFEST
+Makefile.PL
+Sentence.pm
+Sentence.xs
+test.pl

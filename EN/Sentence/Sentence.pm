@@ -1,0 +1,217 @@
+package Lingua::EN::Sentence;
+
+#==============================================================================
+#
+# Start of POD
+#
+#==============================================================================
+
+=head1 NAME
+
+Lingua::EN::Sentence - Module for splitting text into sentences.
+
+=head1 SYNOPSIS
+
+	use Lingua::EN::Sentence qw( get_sentences add_acronyms );
+
+	add_acronyms(('lt','gen'));		## adding support for 'Lt. Gen.'
+	my $sentences=get_sentences($text);	## Get the sentences.
+	foreach my $sentence (@$sentences) {
+		## do something with $sentence
+	}
+
+
+=head1 DESCRIPTION
+
+The C<Lingua::EN::Sentence> module contains the function get_sentences, which splits text into its constituent sentences, based on a regular expression and a list of abbreviations (built in and given).
+
+Certain well know exceptions, such as abreviations, may cause incorrect segmentations.  But some of them are already integraded into this code and are being taken care of.  Still, if you see that there are words causing the get_sentences() to fail, you can add those to the module, so it notices them.
+
+=head1 FUNCTIONS
+
+All functions used should be requested in the 'use' clause. None is exported by default.
+
+=item get_sentences( $text )
+
+The get sentences function takes a scalar containing ascii text as an argument and returns a reference to an array of sentences that the text has been split into.
+Returned sentences will be trimmed (beginning and end of sentence) of white-spaces.
+Strings with no alpha-numeric characters in them, won't be returned as sentences.
+
+=item add_acronyms( @acronyms )
+
+This function is used for adding acronyms not supported by this code.  Please see `Acronym/Abbreviations list' somewhere in this document for the abbreviations already supported by this module.
+
+=item get_acronyms(	)
+
+This function will return the defined list of acronyms.
+
+=item set_acronyms( @my_acronyms )
+
+This function replaces the predefined acroym list with the given list.
+
+=head1 Acronym/Abbreviations list
+
+Currently supported acronym lists are:
+
+	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' )
+	INSTITUTES ( 'dept', 'univ' )
+	COMPANIES ( 'inc', 'ltd' )
+	MISC ( 'vs', 'etc' )
+
+If I come across a good general-purpose list - I'll incorporate it into this module.
+Feel free to suggest such lists. 
+
+=head1 SEE ALSO
+
+	Text::Sentence
+
+=head1 AUTHOR
+
+Shlomo Yona E<lt>Shlomo.Yona@Siftology.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2001 Siftology Inc.. All rights reserved.
+
+This library is free software. 
+You can redistribute it and/or modify it under the same terms as Perl itself.  
+
+=cut
+
+#==============================================================================
+#
+# End of POD
+#
+#==============================================================================
+
+
+#==============================================================================
+#
+# Pragmas
+#
+#==============================================================================
+require 5.005_03;
+use strict;
+
+#==============================================================================
+#
+# Modules
+#
+#==============================================================================
+require Exporter;
+
+#==============================================================================
+#
+# Public globals
+#
+#==============================================================================
+use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
+
+$VERSION = '0.01';
+@ISA = qw( Exporter );
+@EXPORT_OK = qw( get_sentences add_acronyms);
+
+$EOS="__END_OF_SENTENCE__";
+$P = q/[\.!?]/;			## PUNCTUATION
+$AP = q/(?:'|"|\)|\]|\})?\s/;	## AFTER PUNCTUATION
+$PAP = $P.$AP;
+
+my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' );
+my @INSTITUTES = ( 'dept', 'univ' );
+my @COMPANIES = ( 'inc', 'ltd' );
+my @MISC = ( 'vs', 'etc' );
+
+@ABBREVIATIONS = (@PEOPLE, @INSTITUTES, @COMPANIES, @MISC ); 
+
+
+#==============================================================================
+#
+# Public methods
+#
+#==============================================================================
+
+#------------------------------------------------------------------------------
+# get_sentences - takes text input and splits it into sentences.
+# A regular expression cuts viciously the text into sentences, 
+# and then a list of rules (some of them consist of a list of abbreviations)
+# is applied on the marked text in order to fix end-of-sentence markings on 
+# places which are not indeed end-of-sentence.
+#------------------------------------------------------------------------------
+sub get_sentences {
+	my ($text)=@_;
+	return [] unless defined $text;
+	my $marked_text = first_sentence_breaking($text);
+	my $fixed_marked_text = remove_false_end_of_sentence($marked_text);
+	my @sentences = split(/$EOS/,$fixed_marked_text);
+	my $cleaned_sentences = clean_sentences(\@sentences);
+	return $cleaned_sentences;
+}
+
+#------------------------------------------------------------------------------
+# add_acronyms - user can add a list of acronyms/abbreviations.
+#------------------------------------------------------------------------------
+sub add_acronyms {
+	push @ABBREVIATIONS, @_;
+}
+
+#------------------------------------------------------------------------------
+# get_acronyms - get defined list of acronyms.
+#------------------------------------------------------------------------------
+sub get_acronyms {
+	return @ABBREVIATIONS;
+}
+
+#------------------------------------------------------------------------------
+# set_acronyms - run over the predefined acroym list with your own list.
+#------------------------------------------------------------------------------
+sub set_acronyms {
+	@ABBREVIATIONS=@_;
+}
+
+
+#==============================================================================
+#
+# Private methods
+#
+#==============================================================================
+
+sub remove_false_end_of_sentence {
+	my ($marked_segment) = @_;
+##	## if one letter before dot - not EOS
+##	$marked_segment=~s/(\s\w$PAP)$EOS/$1/sg; 
+##	## don't do u.s.a.
+##	$marked_segment=~s/(\.\w$PAP)$EOS/$1/sg; 
+	$marked_segment=~s/(\W\w$PAP)$EOS/$1/sg; 
+	## fix where abbreviations exist
+	map {$marked_segment=~s/(\s$_$PAP)$EOS/$1/isg;} @ABBREVIATIONS;
+	$marked_segment=~s/(\s$PAP)$EOS/$1/sg;
+	return $marked_segment;
+}
+
+sub clean_sentences {
+	my ($sentences) = @_;
+		my $cleaned_sentences;
+		foreach my $s (@$sentences) {
+			next if not defined $s;
+			next if $s!~m/\w+/;
+			$s=~s/^\s*//;
+			$s=~s/\s*$//;
+##			$s=~s/\s+/ /g;
+			push @$cleaned_sentences,$s;
+		}
+	return $cleaned_sentences;
+}
+
+sub first_sentence_breaking {
+	my ($text) = @_;
+	$text=~s/($PAP)/$1$EOS/gs;
+	return $text;
+}
+
+#==============================================================================
+#
+# Return TRUE
+#
+#==============================================================================
+
+1;
