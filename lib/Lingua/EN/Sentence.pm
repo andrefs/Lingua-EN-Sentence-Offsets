@@ -133,7 +133,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.13';
+$VERSION = '0.15';
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( get_sentences 
 		add_acronyms get_acronyms set_acronyms
@@ -253,6 +253,15 @@ sub remove_false_end_of_sentence {
 	$marked_segment=~s/(['"]$P['"]\s+)$EOS/$1/sg;
 	## fix where abbreviations exist
 	map {$marked_segment=~s/(\b$_$PAP)$EOS/$1/isg;} @ABBREVIATIONS;
+	
+	# fix where M. in end of sentence. This is French version to Mr.
+	$marked_segment=~s/(M\.\s+)$EOS(\s*[A-Z])/$1$2/sg;
+	$marked_segment=~s/(M\.\s*)$EOS(\s+[A-Z])/$1$2/sg;
+
+	# don't break after quote unless its a capital letter.
+	$marked_segment=~s/(["']\s*)$EOS(\s+[^A-Z])/$1$2/sg;
+	$marked_segment=~s/(["']\s+)$EOS(\s*[^A-Z])/$1$2/sg;
+
 	$marked_segment=~s/(\s$PAP)$EOS/$1/sg;
 	return $marked_segment;
 }

@@ -43,4 +43,6 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	- added symbol '»' as another possibility of end-quote.
 	- Abbreviations added from: http://englishplus.com/grammar/00000057.htm
 	- Abbreviations added from: http://www.nyu.edu/classes/copyXediting/STABBREV.html
-
+0.15 Sun Nov 18 13:12:07 2001
+	- French use M. for Mr.
+	- Don't split sentences starting with a quote after the quote if the following text is not a capital letter.
