@@ -127,7 +127,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.11';
+$VERSION = '0.12';
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( get_sentences 
 		add_acronyms get_acronyms set_acronyms
@@ -232,6 +232,8 @@ sub remove_false_end_of_sentence {
 	$marked_segment=~s/(\W\w$PAP)$EOS/$1/sg;
 	$marked_segment=~s/(\W\w$P)$EOS/$1/sg;         
 
+	# don't split |John P. Stenbit| into |John P.| and |Stenbit|
+	$marked_segment=~s/([A-Z]\w+\s+\S$P\s*)$EOS(\s*[A-Z])/$1$2/sg; 
 
 	# fix: bla bla... yada yada
 	$marked_segment=~s/(\.\.\. )$EOS([a-z])/$1$2/sg; 

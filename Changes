@@ -33,4 +33,5 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	- Fixed bug when processing stuff like "   U.S.  "
 0.11 Tue Sep 4 15:12:55 2001
 	- Don't split |John P. Stenbit| into |John P.| and |Stenbit|
-
+0.12 Thu Sep 20 11:28:45 2001
+	- Should be a final fix for same thing as reported in 0.11
