@@ -52,4 +52,6 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	- Considering French as well - some french characters are considered as \W - I had to exclude them by literaly writing them.
 0.18 Wed Nov 21 19:36:17 2001
 	- Using locale for allowing usage of iso8859-1. I'm expecting to find English and French (like) text, so I want my \w and \W to match the right things.
-	
+0.19 Sun Dec 23 09:26:39 2001
+	- Added some more abbreviations.
+	- Trying not to break: text . . some more text

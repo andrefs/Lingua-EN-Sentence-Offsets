@@ -67,10 +67,10 @@ This function alters the end-of-sentence string used to mark the end of sentence
 
 Currently supported acronym lists are:
 
-	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr' )
-	ARMY ( 'col','gen', 'lt', 'cmdr' )
+	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', 'sen', 'rep', 'gov' )
+	ARMY ( 'col','gen', 'lt', 'cmdr', 'adm' )
 	INSTITUTES ( 'dept', 'univ' )
-	COMPANIES ( 'inc', 'ltd' )
+	COMPANIES ( 'inc', 'ltd', 'co', 'corp' )
 	PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
 		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce',
 		'Ala' , 'Ariz', 'Ark', 'Cal', 'Calif', 'Col', 'Colo', 'Conn',
@@ -135,7 +135,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.18';
+$VERSION = '0.19';
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( get_sentences 
 		add_acronyms get_acronyms set_acronyms
@@ -146,10 +146,10 @@ $P = q/[\.!?]/;			## PUNCTUATION
 $AP = q/(?:'|"|»|\)|\]|\})?\s/;	## AFTER PUNCTUATION
 $PAP = $P.$AP;
 
-my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr' );
-my @ARMY = ( 'col','gen', 'lt', 'cmdr' );
+my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', 'sen', 'rep', 'gov' );
+my @ARMY = ( 'col','gen', 'lt', 'cmdr', 'adm' );
 my @INSTITUTES = ( 'dept', 'univ' );
-my @COMPANIES = ( 'inc', 'ltd' );
+my @COMPANIES = ( 'inc', 'ltd', 'co', 'corp' );
 my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
 		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce',
 		'Ala' , 'Ariz', 'Ark', 'Cal', 'Calif', 'Col', 'Colo', 'Conn',
@@ -263,6 +263,9 @@ sub remove_false_end_of_sentence {
 	# don't break after quote unless its a capital letter.
 	$marked_segment=~s/(["']\s*)$EOS(\s+[^A-Z])/$1$2/sg;
 	$marked_segment=~s/(["']\s+)$EOS(\s*[^A-Z])/$1$2/sg;
+
+	# don't break: text . . some more text.
+	$marked_segment=~s/(\s\.\s)$EOS(\s*)/$1$2/sg;
 
 	$marked_segment=~s/(\s$PAP)$EOS/$1/sg;
 	return $marked_segment;
