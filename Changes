@@ -46,3 +46,6 @@ Revision history for Perl extension Lingua::EN::Sentence.
 0.15 Sun Nov 18 13:12:07 2001
 	- French use M. for Mr.
 	- Don't split sentences starting with a quote after the quote if the following text is not a capital letter.
+0.16 
+	- testbench reduced to "nothing" again...
+

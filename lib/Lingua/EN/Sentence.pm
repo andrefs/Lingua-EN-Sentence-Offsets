@@ -133,7 +133,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.15';
+$VERSION = '0.16';
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( get_sentences 
 		add_acronyms get_acronyms set_acronyms
