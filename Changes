@@ -35,3 +35,6 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	- Don't split |John P. Stenbit| into |John P.| and |Stenbit|
 0.12 Thu Sep 20 11:28:45 2001
 	- Should be a final fix for same thing as reported in 0.11
+0.13 Thu Oct 4 10:08:12 2001
+	- Bugfix splitting (wrongly!) after i.e. and e.g. and such
+	- Previously, sentences like "They won the game 0-3. We lost" didn't get split.
