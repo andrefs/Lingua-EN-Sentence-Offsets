@@ -17,3 +17,5 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	- Added a test for the installation.
 0.04  Mon Mar 12 15:15:51 2001
 	- Added word boundary  before correcting EOS with abbreviations. (bugfix)
+0.05  Mon Mar 26 12:35:31 2001
+	- fix: "bla bla... yada yada" from being broken to: "bla bla..." and "yada yada"

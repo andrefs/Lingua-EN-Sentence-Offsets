@@ -219,6 +219,9 @@ sub remove_false_end_of_sentence {
 ##	## don't do u.s.a.
 ##	$marked_segment=~s/(\.\w$PAP)$EOS/$1/sg; 
 	$marked_segment=~s/(\W\w$PAP)$EOS/$1/sg; 
+
+	# fix: bla bla... yada yada
+	$marked_segment=~s/(\.\.\. )$EOS([a-z])/$1$2/sg; 
 	# fix "." "?" "!"
 	$marked_segment=~s/(['"]$P['"]\s+)$EOS/$1/sg;
 	## fix where abbreviations exist
