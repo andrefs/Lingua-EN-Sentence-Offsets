@@ -117,7 +117,9 @@ You can redistribute it and/or modify it under the same terms as Perl itself.
 #==============================================================================
 require 5.005_03;
 use strict;
-
+use POSIX qw(locale_h);
+setlocale(LC_CTYPE, "fr_CA.ISO8859-1"); # LC_CTYPE now in locale "French, Canada, codeset ISO 8859-1"
+use locale;
 #==============================================================================
 #
 # Modules
@@ -133,7 +135,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.17';
+$VERSION = '0.18';
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( get_sentences 
 		add_acronyms get_acronyms set_acronyms
@@ -241,8 +243,8 @@ sub remove_false_end_of_sentence {
 ##	$marked_segment=~s/(\s\w$PAP)$EOS/$1/sg; 
 ##	## don't do u.s.a.
 ##	$marked_segment=~s/(\.\w$PAP)$EOS/$1/sg; 
-	$marked_segment=~s/([^\wיכאש]\w$PAP)$EOS/$1/sg;
-	$marked_segment=~s/([^\wיכאש]\w$P)$EOS/$1/sg;         
+	$marked_segment=~s/(\W\w$PAP)$EOS/$1/sg;
+	$marked_segment=~s/(\W\w$P)$EOS/$1/sg;         
 
 	# don't split |John P. Stenbit| into |John P.| and |Stenbit|
 	$marked_segment=~s/([A-Z]\w+\s+\S$P\s*)$EOS(\s*[A-Z])/$1$2/sg; 
