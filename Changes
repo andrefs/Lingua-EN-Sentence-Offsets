@@ -58,7 +58,14 @@ Revision history for Perl extension Lingua::EN::Sentence.
 0.20 Wed Dec 26 09:43:09 2001
 	- Break at the dot: concretizar-se-á. Astiazaram
 	- Fixed bugs with abbreviation 'no.'.
-0.21 Sun Jan 13  08:22:013 2002
+0.21 Sun Jan 13  08:22:13 2002
 	- break sentence when: <punctuation><end-quote><whitespaces><open bracket>...
 	- break on:  ... Bush's. Bla Bla
 	- Added abbreviation 'Capt.'
+0.22 Wed Jan 30  13:15:31 2002
+	- Added more acronyms.
+	- Hopefully not breaking anymore NY like street addresses.
+	- In general, don't break on single letter followed by a dot.
+	- Special attention to abbreviation 'no.'.
+	- bugfix conserning internal variable $PAP
+	- added set_locale()

@@ -63,28 +63,37 @@ This function returns the value of the string used to mark the end of sentence. 
 
 This function alters the end-of-sentence string used to mark the end of sentences. 
 
+=item set_locale( $new_locale )
+Revceives language locale in the form language.country.character-set
+for example:
+	"fr_CA.ISO8859-1"
+for Canadian French using character set ISO8859-1.
+
+Returns a reference to a hash containing the current locale formatting values.
+Returns undef if got undef.
+
+
+The following will set the LC_COLLATE behaviour to Argentinian Spanish. NOTE: The naming and avail­ ability of locales depends on your operating sys­ tem. Please consult the perllocale manpage for how to find out which locales are available in your system.
+
+$loc = set_locale( "es_AR.ISO8859-1" );
+
+This actually does this:
+
+$loc = setlocale( LC_ALL, "es_AR.ISO8859-1" );
+
 =head1 Acronym/Abbreviations list
 
-Currently supported acronym lists are:
-
-	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', 'sen', 'rep', 'gov' )
-	ARMY ( 'col','gen', 'lt', 'cmdr', 'adm', 'capt' )
-	INSTITUTES ( 'dept', 'univ' )
-	COMPANIES ( 'inc', 'ltd', 'co', 'corp' )
-	PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
-		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce',
-		'Ala' , 'Ariz', 'Ark', 'Cal', 'Calif', 'Col', 'Colo', 'Conn',
-		'Del', 'Fed' , 'Fla', 'Ga', 'Ida', 'Id', 'Ill', 'Ind', 'Ia',
-		'Kan', 'Kans', 'Ken', 'Ky' , 'La', 'Me', 'Md', 'Is', 'Mass', 
-		'Mich', 'Minn', 'Miss', 'Mo', 'Mont', 'Neb', 'Nebr' , 'Nev',
-		'Mex', 'Okla', 'Ok', 'Ore', 'Oreg', 'Penna', 'Penn', 'Pa'  , 'Dak',
-		'Tenn', 'Tex', 'Ut', 'Vt', 'Va', 'Wash', 'Wis', 'Wisc', 'Wy',
-		'Wyo', 'USAFA', 'Alta' , 'Man', 'Ont', 'Qué', 'Sask', 'Yuk')
-	MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec', 'sept')
-	MISC ( 'vs', 'etc' )
+You can use the get_acronyms() function to get acronyms.
+It has become too long to specify in the documentation.
 
 If I come across a good general-purpose list - I'll incorporate it into this module.
 Feel free to suggest such lists. 
+
+=head1 FUTURE WORK
+[1] Object Oriented like usage
+[2] Supporting more than just English/French
+[3] Code optimization. Currently everything is RE based and not so optimized RE
+[4] Possibly use more semantic heuristics for detecting a beginning of a sentence
 
 =head1 SEE ALSO
 
@@ -118,8 +127,6 @@ You can redistribute it and/or modify it under the same terms as Perl itself.
 require 5.005_03;
 use strict;
 use POSIX qw(locale_h);
-setlocale(LC_CTYPE, "fr_CA.ISO8859-1"); # LC_CTYPE now in locale "French, Canada, codeset ISO 8859-1"
-use locale;
 #==============================================================================
 #
 # Modules
@@ -132,10 +139,15 @@ require Exporter;
 # Public globals
 #
 #==============================================================================
-use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
+use vars qw/$VERSION @ISA @EXPORT_OK $EOS $LOC $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.20';
+$VERSION = '0.22';
+
+# LC_CTYPE now in locale "French, Canada, codeset ISO 8859-1"
+$LOC=setlocale(LC_CTYPE, "fr_CA.ISO8859-1"); 
+use locale;
+
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( get_sentences 
 		add_acronyms get_acronyms set_acronyms
@@ -143,14 +155,18 @@ $VERSION = '0.20';
 
 $EOS="\001";
 $P = q/[\.!?]/;			## PUNCTUATION
-$AP = q/(?:'|"|»|\)|\]|\})?\s/;	## AFTER PUNCTUATION
+$AP = q/(?:'|"|»|\)|\]|\})?/;	## AFTER PUNCTUATION
 $PAP = $P.$AP;
 
-my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', 'sen', 'rep', 'gov' );
-my @ARMY = ( 'col','gen', 'lt', 'cmdr', 'adm', 'capt' );
-my @INSTITUTES = ( 'dept', 'univ' );
+my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', "sens?", "reps?", 'gov',
+		"attys?", 'supt',  'det', 'rev' );
+
+
+my @ARMY = ( 'col','gen', 'lt', 'cmdr', 'adm', 'capt', 'sgt' );
+my @INSTITUTES = ( 'dept', 'univ', 'assn', 'bros' );
 my @COMPANIES = ( 'inc', 'ltd', 'co', 'corp' );
 my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
+		'dist', 'mt', 'ft',
 		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce',
 		'Ala' , 'Ariz', 'Ark', 'Cal', 'Calif', 'Col', 'Colo', 'Conn',
 		'Del', 'Fed' , 'Fla', 'Ga', 'Ida', 'Id', 'Ill', 'Ind', 'Ia',
@@ -160,7 +176,7 @@ my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
 		'Tenn', 'Tex', 'Ut', 'Vt', 'Va', 'Wash', 'Wis', 'Wisc', 'Wy',
 		'Wyo', 'USAFA', 'Alta' , 'Man', 'Ont', 'Qué', 'Sask', 'Yuk');
 my @MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','sept');
-my @MISC = ( 'vs', 'etc' );
+my @MISC = ( 'vs', 'etc', 'no', 'esp' );
 
 @ABBREVIATIONS = (@PEOPLE, @ARMY, @INSTITUTES, @COMPANIES, @PLACES, @MONTHS, @MISC ); 
 
@@ -229,6 +245,44 @@ sub set_EOS {
 	return $EOS = $new_EOS;
 }
 
+#------------------------------------------------------------------------------
+# set_locale - set the value of the locale.
+#
+#		Revceives language locale in the form
+#			language.country.character-set
+#		for example:
+#				"fr_CA.ISO8859-1"
+#		for Canadian French using character set ISO8859-1.
+#
+#		Returns a reference to a hash containing the current locale 
+#		formatting values.
+#		Returns undef if got undef.
+#
+#
+#               The following will set the LC_COLLATE behaviour to
+#               Argentinian Spanish. NOTE: The naming and avail­
+#               ability of locales depends on your operating sys­
+#               tem. Please consult the perllocale manpage for how
+#               to find out which locales are available in your
+#               system.
+#
+#                       $loc = set_locale( "es_AR.ISO8859-1" );
+#
+#
+#		This actually does this:
+#
+#			$loc = setlocale( LC_ALL, "es_AR.ISO8859-1" );
+#------------------------------------------------------------------------------
+sub set_locale {
+	my ($new_locale) = @_;
+	if (not defined $new_locale) {
+		cluck "Won't set locale to undefined value!\n";
+		return undef;
+	}
+	$LOC = setlocale(LC_CTYPE, $new_locale); 
+	return $LOC;
+}
+
 
 #==============================================================================
 #
@@ -239,48 +293,53 @@ sub set_EOS {
 ## Please email me any suggestions for optimizing these RegExps.
 sub remove_false_end_of_sentence {
 	my ($marked_segment) = @_;
-##	## if one letter before dot - not EOS
-##	$marked_segment=~s/(\s\w$PAP)$EOS/$1/sg; 
 ##	## don't do u.s.a.
 ##	$marked_segment=~s/(\.\w$PAP)$EOS/$1/sg; 
-	$marked_segment=~s/([^-\w]\w$PAP)$EOS/$1/sg;
+	$marked_segment=~s/([^-\w]\w$PAP\s)$EOS/$1/sg;
 	$marked_segment=~s/([^-\w]\w$P)$EOS/$1/sg;         
 
-	# don't split |John P. Stenbit| into |John P.| and |Stenbit|
-	$marked_segment=~s/([A-Z]\w+\s+\S$P\s*)$EOS(\s*[A-Z])/$1$2/sg; 
+	# don't plit after a white-space followed by a single letter followed
+	# by a dot followed by another whitespace.
+	$marked_segment=~s/(\s\w\.\s+)$EOS/$1/sg; 
 
 	# fix: bla bla... yada yada
-	$marked_segment=~s/(\.\.\. )$EOS([a-z])/$1$2/sg; 
+	$marked_segment=~s/(\.\.\. )$EOS([[:lower:]])/$1$2/sg; 
 	# fix "." "?" "!"
 	$marked_segment=~s/(['"]$P['"]\s+)$EOS/$1/sg;
 	## fix where abbreviations exist
-	map {$marked_segment=~s/(\b$_$PAP)$EOS/$1/isg;} @ABBREVIATIONS;
+	foreach (@ABBREVIATIONS) { $marked_segment=~s/(\b$_$PAP\s)$EOS/$1/isg; }
 	
-	# fix where M. in end of sentence. This is French version to Mr.
-	$marked_segment=~s/(M\.\s+)$EOS(\s*[A-Z])/$1$2/sg;
-	$marked_segment=~s/(M\.\s*)$EOS(\s+[A-Z])/$1$2/sg;
-
 	# don't break after quote unless its a capital letter.
-	$marked_segment=~s/(["']\s*)$EOS(\s+[^A-Z])/$1$2/sg;
-	$marked_segment=~s/(["']\s+)$EOS(\s*[^A-Z])/$1$2/sg;
+	$marked_segment=~s/(["']\s*)$EOS(\s*[[:lower:]])/$1$2/sg;
 
 	# don't break: text . . some more text.
 	$marked_segment=~s/(\s\.\s)$EOS(\s*)/$1$2/sg;
 
-	# don't break: no. 1
-	$marked_segment=~s/(no$P)$EOS(\s+\d)/$1$2/gsi;
-
-	$marked_segment=~s/(\s$PAP)$EOS/$1/sg;
+	$marked_segment=~s/(\s$PAP\s)$EOS/$1/sg;
 	return $marked_segment;
 }
 
 sub split_unsplit_stuff {
 	my ($text) = @_;
-	# don't split |John P. Stenbit| into |John P.| and |Stenbit|
-	$text=~s/([A-Z]\w+\s+\S$P\s*)$EOS(\s*[A-Z])/$1$2/sg;
+
 	$text=~s/(\D\d+)($P)(\s+)/$1$2$EOS$3/sg;
-	$text=~s/($PAP)(\s*\()/$1$EOS$2/gs;
+	$text=~s/($PAP\s)(\s*\()/$1$EOS$2/gs;
 	$text=~s/('\w$P)(\s)/$1$EOS$2/gs;
+
+
+	$text=~s/(\sno\.)(\s+)(?!\d)/$1$EOS$2/gis;
+
+##	# split where single capital letter followed by dot makes sense to break.
+##	# notice these are exceptions to the general rule NOT to split on single
+##	# letter.
+##	# notice also that sibgle letter M is missing here, due to French 'mister'
+##	# which is representes as M.
+##	#
+##	# the rule will not split on names begining or containing 
+##	# single capital letter dot in the first or second name
+##	# assuming 2 or three word name.
+##	$text=~s/(\s[[:lower:]]\w+\s+[^[[:^upper:]M]\.)(?!\s+[[:upper:]]\.)/$1$EOS/sg;
+
 	return $text;
 }
 
@@ -301,7 +360,7 @@ sub clean_sentences {
 sub first_sentence_breaking {
 	my ($text) = @_;
 	$text=~s/\n\s*\n/$EOS/gs;	## double new-line means a different sentence.
-	$text=~s/($PAP)/$1$EOS/gs;
+	$text=~s/($PAP\s)/$1$EOS/gs;
 	$text=~s/(\s\w$P)/$1$EOS/gs; # breake also when single letter comes before punc.
 	return $text;
 }
