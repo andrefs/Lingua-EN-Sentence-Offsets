@@ -26,8 +26,11 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	- bug fix.
 0.08  Mon May 21 05:55:23 2001
 	- Added months abbreviations.
-0.09 Thu Aug 21 08:11:07 2001
+0.09 Tue Aug 21 08:11:07 2001
 	- More abbreviations
 	- Fixed bug where single letter before '.'/'?'/'!' didn't cause insertion of $EOS
-0.10 Thu Aug 28 15:07:47 2001
+0.10 Tue Aug 28 15:07:47 2001
 	- Fixed bug when processing stuff like "   U.S.  "
+0.11 Tue Sep 4 15:12:55 2001
+	- Don't split |John P. Stenbit| into |John P.| and |Stenbit|
+
