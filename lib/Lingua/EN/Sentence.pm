@@ -169,6 +169,7 @@ sub get_sentences {
 	return [] unless defined $text;
 	my $marked_text = first_sentence_breaking($text);
 	my $fixed_marked_text = remove_false_end_of_sentence($marked_text);
+	$fixed_marked_text = split_unsplit_stuff($fixed_marked_text);
 	my @sentences = split(/$EOS/,$fixed_marked_text);
 	my $cleaned_sentences = clean_sentences(\@sentences);
 	return $cleaned_sentences;
@@ -240,6 +241,12 @@ sub remove_false_end_of_sentence {
 	return $marked_segment;
 }
 
+sub split_unsplit_stuff {
+	my ($text) = @_;
+	$text =~ s/(\s\S$P)(\s)/$1$EOS$2/gs;
+	return $text;
+}
+
 sub clean_sentences {
 	my ($sentences) = @_;
 		my $cleaned_sentences;
@@ -258,6 +265,7 @@ sub first_sentence_breaking {
 	my ($text) = @_;
 	$text=~s/\n\s*\n/$EOS/gs;	## double new-line means a different sentence.
 	$text=~s/($PAP)/$1$EOS/gs;
+	$text=~s/(\s\w$P)/$1$EOS/gs; # breake also when single letter comes before punc.
 	return $text;
 }
 
