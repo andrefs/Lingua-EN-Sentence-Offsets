@@ -2,3 +2,9 @@ Revision history for Perl extension Lingua::EN::Sentence.
 
 0.01  Thu Feb 22 12:16:17 2001
 	- original version; 
+0.02  Fri Feb 23 14:25:01 2001
+	- Supporting 'no' abbreviation.
+	- exporting OK set_acronyms(),get_acronyms().
+	- Don't break on "." and a-like...
+	- fixed bug causing wrong breaking sentence if abbreviation is the first word.
+	(Thanks to Itai Nahshon for his comments!!)

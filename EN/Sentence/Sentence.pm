@@ -56,7 +56,7 @@ Currently supported acronym lists are:
 	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' )
 	INSTITUTES ( 'dept', 'univ' )
 	COMPANIES ( 'inc', 'ltd' )
-	MISC ( 'vs', 'etc' )
+	MISC ( 'vs', 'etc', 'no' )
 
 If I come across a good general-purpose list - I'll incorporate it into this module.
 Feel free to suggest such lists. 
@@ -109,7 +109,7 @@ use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
 
 $VERSION = '0.01';
 @ISA = qw( Exporter );
-@EXPORT_OK = qw( get_sentences add_acronyms);
+@EXPORT_OK = qw( get_sentences add_acronyms get_acronyms set_acronyms);
 
 $EOS="__END_OF_SENTENCE__";
 $P = q/[\.!?]/;			## PUNCTUATION
@@ -119,7 +119,7 @@ $PAP = $P.$AP;
 my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' );
 my @INSTITUTES = ( 'dept', 'univ' );
 my @COMPANIES = ( 'inc', 'ltd' );
-my @MISC = ( 'vs', 'etc' );
+my @MISC = ( 'vs', 'etc', 'no' );
 
 @ABBREVIATIONS = (@PEOPLE, @INSTITUTES, @COMPANIES, @MISC ); 
 
@@ -175,6 +175,7 @@ sub set_acronyms {
 #
 #==============================================================================
 
+## Please email me any suggestions for optimizing these RegExps.
 sub remove_false_end_of_sentence {
 	my ($marked_segment) = @_;
 ##	## if one letter before dot - not EOS
@@ -182,8 +183,10 @@ sub remove_false_end_of_sentence {
 ##	## don't do u.s.a.
 ##	$marked_segment=~s/(\.\w$PAP)$EOS/$1/sg; 
 	$marked_segment=~s/(\W\w$PAP)$EOS/$1/sg; 
+	# fix "." "?" "!"
+	$marked_segment=~s/(['"]$P['"]\s+)$EOS/$1/sg;
 	## fix where abbreviations exist
-	map {$marked_segment=~s/(\s$_$PAP)$EOS/$1/isg;} @ABBREVIATIONS;
+	map {$marked_segment=~s/($_$PAP)$EOS/$1/isg;} @ABBREVIATIONS;
 	$marked_segment=~s/(\s$PAP)$EOS/$1/sg;
 	return $marked_segment;
 }
