@@ -24,4 +24,6 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	(Thanks to Kim Ryan: kimaryan@ozemail.com.au)
 0.07  Mon May 14 16:12:12 2001
 	- bug fix.
+0.08  Mon May 21 05:55:23 2001
+	- Added months abbreviations.
 

@@ -67,12 +67,14 @@ This function alters the end-of-sentence string used to mark the end of sentence
 
 Currently supported acronym lists are:
 
-	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' )
+	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr' )
 	ARMY ( 'col','gen', 'lt', 'cmdr' )
 	INSTITUTES ( 'dept', 'univ' )
 	COMPANIES ( 'inc', 'ltd' )
 	PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
-		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce', 'wy')
+		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce', 'wy',
+		'va')
+	MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec')
 	MISC ( 'vs', 'etc', 'no' )
 
 If I come across a good general-purpose list - I'll incorporate it into this module.
@@ -125,7 +127,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.01';
+$VERSION = '0.08';
 @ISA = qw( Exporter );
 @EXPORT_OK = qw( get_sentences 
 		add_acronyms get_acronyms set_acronyms
@@ -136,16 +138,17 @@ $P = q/[\.!?]/;			## PUNCTUATION
 $AP = q/(?:'|"|\)|\]|\})?\s/;	## AFTER PUNCTUATION
 $PAP = $P.$AP;
 
-my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' );
+my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr' );
 my @ARMY = ( 'col','gen', 'lt', 'cmdr' );
 my @INSTITUTES = ( 'dept', 'univ' );
 my @COMPANIES = ( 'inc', 'ltd' );
 my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
 		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce',
-		'wy');
+		'wy', 'va', 'ariz');
+my @MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec');
 my @MISC = ( 'vs', 'etc', 'no' );
 
-@ABBREVIATIONS = (@PEOPLE, @ARMY, @INSTITUTES, @COMPANIES, @PLACES, @MISC ); 
+@ABBREVIATIONS = (@PEOPLE, @ARMY, @INSTITUTES, @COMPANIES, @PLACES, @MONTHS, @MISC ); 
 
 
 #==============================================================================
