@@ -142,7 +142,7 @@ require Exporter;
 use vars qw/$VERSION @ISA @EXPORT_OK $EOS $LOC $AP $P $PAP @ABBREVIATIONS/;
 use Carp qw/cluck/;
 
-$VERSION = '0.22';
+$VERSION = '0.23';
 
 # LC_CTYPE now in locale "French, Canada, codeset ISO 8859-1"
 $LOC=setlocale(LC_CTYPE, "fr_CA.ISO8859-1"); 
@@ -162,7 +162,7 @@ my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', "sens?", "reps?", 'g
 		"attys?", 'supt',  'det', 'rev' );
 
 
-my @ARMY = ( 'col','gen', 'lt', 'cmdr', 'adm', 'capt', 'sgt' );
+my @ARMY = ( 'col','gen', 'lt', 'cmdr', 'adm', 'capt', 'sgt', 'cpl', 'maj' );
 my @INSTITUTES = ( 'dept', 'univ', 'assn', 'bros' );
 my @COMPANIES = ( 'inc', 'ltd', 'co', 'corp' );
 my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
@@ -339,6 +339,10 @@ sub split_unsplit_stuff {
 ##	# single capital letter dot in the first or second name
 ##	# assuming 2 or three word name.
 ##	$text=~s/(\s[[:lower:]]\w+\s+[^[[:^upper:]M]\.)(?!\s+[[:upper:]]\.)/$1$EOS/sg;
+
+
+	# add EOS when you see "a.m." or "p.m." followed by a capital letter.
+	$text=~s/([ap]\.m\.\s+)([[:upper:]])/$1$EOS$2/gs;
 
 	return $text;
 }
