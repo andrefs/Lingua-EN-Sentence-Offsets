@@ -14,7 +14,7 @@ Lingua::EN::Sentence - Module for splitting text into sentences.
 
 	use Lingua::EN::Sentence qw( get_sentences add_acronyms );
 
-	add_acronyms(('lt','gen'));		## adding support for 'Lt. Gen.'
+	add_acronyms('lt','gen');		## adding support for 'Lt. Gen.'
 	my $sentences=get_sentences($text);	## Get the sentences.
 	foreach my $sentence (@$sentences) {
 		## do something with $sentence
@@ -68,8 +68,11 @@ This function alters the end-of-sentence string used to mark the end of sentence
 Currently supported acronym lists are:
 
 	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' )
+	ARMY ( 'col','gen', 'lt', 'cmdr' )
 	INSTITUTES ( 'dept', 'univ' )
 	COMPANIES ( 'inc', 'ltd' )
+	PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
+		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce', 'wy')
 	MISC ( 'vs', 'etc', 'no' )
 
 If I come across a good general-purpose list - I'll incorporate it into this module.
@@ -134,11 +137,15 @@ $AP = q/(?:'|"|\)|\]|\})?\s/;	## AFTER PUNCTUATION
 $PAP = $P.$AP;
 
 my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' );
+my @ARMY = ( 'col','gen', 'lt', 'cmdr' )
 my @INSTITUTES = ( 'dept', 'univ' );
 my @COMPANIES = ( 'inc', 'ltd' );
+my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
+		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce',
+		'wy');
 my @MISC = ( 'vs', 'etc', 'no' );
 
-@ABBREVIATIONS = (@PEOPLE, @INSTITUTES, @COMPANIES, @MISC ); 
+@ABBREVIATIONS = (@PEOPLE, @ARMY, @INSTITUTES, @COMPANIES, @PLACES, @MISC ); 
 
 
 #==============================================================================
