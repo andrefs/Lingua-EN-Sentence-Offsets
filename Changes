@@ -72,3 +72,5 @@ Revision history for Perl extension Lingua::EN::Sentence.
 0.23 Sun Feb 17	09:00:00 2002
 	- Break sentence after seeing "a.m." or "p.m." followed by a capital letter.
 	- Added some abbreviations
+0.24 Mon Sep 23 12:30:02 2002
+	- Changing the "rights" notice.
