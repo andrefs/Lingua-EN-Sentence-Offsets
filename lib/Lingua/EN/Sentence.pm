@@ -68,7 +68,7 @@ This function alters the end-of-sentence string used to mark the end of sentence
 Currently supported acronym lists are:
 
 	PEOPLE ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', 'sen', 'rep', 'gov' )
-	ARMY ( 'col','gen', 'lt', 'cmdr', 'adm' )
+	ARMY ( 'col','gen', 'lt', 'cmdr', 'adm', 'capt' )
 	INSTITUTES ( 'dept', 'univ' )
 	COMPANIES ( 'inc', 'ltd', 'co', 'corp' )
 	PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
@@ -147,7 +147,7 @@ $AP = q/(?:'|"|»|\)|\]|\})?\s/;	## AFTER PUNCTUATION
 $PAP = $P.$AP;
 
 my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', 'sen', 'rep', 'gov' );
-my @ARMY = ( 'col','gen', 'lt', 'cmdr', 'adm' );
+my @ARMY = ( 'col','gen', 'lt', 'cmdr', 'adm', 'capt' );
 my @INSTITUTES = ( 'dept', 'univ' );
 my @COMPANIES = ( 'inc', 'ltd', 'co', 'corp' );
 my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
@@ -279,6 +279,8 @@ sub split_unsplit_stuff {
 	# don't split |John P. Stenbit| into |John P.| and |Stenbit|
 	$text=~s/([A-Z]\w+\s+\S$P\s*)$EOS(\s*[A-Z])/$1$2/sg;
 	$text=~s/(\D\d+)($P)(\s+)/$1$2$EOS$3/sg;
+	$text=~s/($PAP)(\s*\()/$1$EOS$2/gs;
+	$text=~s/('\w$P)(\s)/$1$EOS$2/gs;
 	return $text;
 }
 
