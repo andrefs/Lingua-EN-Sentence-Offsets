@@ -15,3 +15,5 @@ Revision history for Perl extension Lingua::EN::Sentence.
 	- EOS changed to something which is \W.
 	- Added get_EOS() set_EOS() to get/set the end-of-sentence mark.
 	- Added a test for the installation.
+0.04  Mon Mar 12 15:15:51 2001
+	- Added word boundary  before correcting EOS with abbreviations. (bugfix)

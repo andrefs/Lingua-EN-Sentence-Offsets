@@ -222,7 +222,7 @@ sub remove_false_end_of_sentence {
 	# fix "." "?" "!"
 	$marked_segment=~s/(['"]$P['"]\s+)$EOS/$1/sg;
 	## fix where abbreviations exist
-	map {$marked_segment=~s/($_$PAP)$EOS/$1/isg;} @ABBREVIATIONS;
+	map {$marked_segment=~s/(\b$_$PAP)$EOS/$1/isg;} @ABBREVIATIONS;
 	$marked_segment=~s/(\s$PAP)$EOS/$1/sg;
 	return $marked_segment;
 }
