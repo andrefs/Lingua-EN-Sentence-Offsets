@@ -38,3 +38,9 @@ Revision history for Perl extension Lingua::EN::Sentence.
 0.13 Thu Oct 4 10:08:12 2001
 	- Bugfix splitting (wrongly!) after i.e. and e.g. and such
 	- Previously, sentences like "They won the game 0-3. We lost" didn't get split.
+0.14 Wed Oct 28 11:19:59 2001
+	- Added some more abbreviations
+	- added symbol '»' as another possibility of end-quote.
+	- Abbreviations added from: http://englishplus.com/grammar/00000057.htm
+	- Abbreviations added from: http://www.nyu.edu/classes/copyXediting/STABBREV.html
+

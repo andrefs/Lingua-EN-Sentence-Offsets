@@ -72,9 +72,15 @@ Currently supported acronym lists are:
 	INSTITUTES ( 'dept', 'univ' )
 	COMPANIES ( 'inc', 'ltd' )
 	PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
-		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce', 'wy',
-		'va')
-	MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec')
+		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce',
+		'Ala' , 'Ariz', 'Ark', 'Cal', 'Calif', 'Col', 'Colo', 'Conn',
+		'Del', 'Fed' , 'Fla', 'Ga', 'Ida', 'Id', 'Ill', 'Ind', 'Ia',
+		'Kan', 'Kans', 'Ken', 'Ky' , 'La', 'Me', 'Md', 'Is', 'Mass', 
+		'Mich', 'Minn', 'Miss', 'Mo', 'Mont', 'Neb', 'Nebr' , 'Nev',
+		'Mex', 'Okla', 'Ok', 'Ore', 'Oreg', 'Penna', 'Penn', 'Pa'  , 'Dak',
+		'Tenn', 'Tex', 'Ut', 'Vt', 'Va', 'Wash', 'Wis', 'Wisc', 'Wy',
+		'Wyo', 'USAFA', 'Alta' , 'Man', 'Ont', 'Qué', 'Sask', 'Yuk')
+	MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec', 'sept')
 	MISC ( 'vs', 'etc', 'no' )
 
 If I come across a good general-purpose list - I'll incorporate it into this module.
@@ -135,7 +141,7 @@ $VERSION = '0.13';
 
 $EOS="\001";
 $P = q/[\.!?]/;			## PUNCTUATION
-$AP = q/(?:'|"|\)|\]|\})?\s/;	## AFTER PUNCTUATION
+$AP = q/(?:'|"|»|\)|\]|\})?\s/;	## AFTER PUNCTUATION
 $PAP = $P.$AP;
 
 my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr' );
@@ -144,8 +150,14 @@ my @INSTITUTES = ( 'dept', 'univ' );
 my @COMPANIES = ( 'inc', 'ltd' );
 my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
 		"fw?y", "hwa?y", 'la', "pde?", 'pl', 'plz', 'rd', 'st', 'tce',
-		'wy', 'va', 'ariz');
-my @MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec');
+		'Ala' , 'Ariz', 'Ark', 'Cal', 'Calif', 'Col', 'Colo', 'Conn',
+		'Del', 'Fed' , 'Fla', 'Ga', 'Ida', 'Id', 'Ill', 'Ind', 'Ia',
+		'Kan', 'Kans', 'Ken', 'Ky' , 'La', 'Me', 'Md', 'Is', 'Mass', 
+		'Mich', 'Minn', 'Miss', 'Mo', 'Mont', 'Neb', 'Nebr' , 'Nev',
+		'Mex', 'Okla', 'Ok', 'Ore', 'Penna', 'Penn', 'Pa'  , 'Dak',
+		'Tenn', 'Tex', 'Ut', 'Vt', 'Va', 'Wash', 'Wis', 'Wisc', 'Wy',
+		'Wyo', 'USAFA', 'Alta' , 'Man', 'Ont', 'Qué', 'Sask', 'Yuk');
+my @MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','sept');
 my @MISC = ( 'vs', 'etc', 'no' );
 
 @ABBREVIATIONS = (@PEOPLE, @ARMY, @INSTITUTES, @COMPANIES, @PLACES, @MONTHS, @MISC ); 
