@@ -137,7 +137,7 @@ $AP = q/(?:'|"|\)|\]|\})?\s/;	## AFTER PUNCTUATION
 $PAP = $P.$AP;
 
 my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof' );
-my @ARMY = ( 'col','gen', 'lt', 'cmdr' )
+my @ARMY = ( 'col','gen', 'lt', 'cmdr' );
 my @INSTITUTES = ( 'dept', 'univ' );
 my @COMPANIES = ( 'inc', 'ltd' );
 my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
