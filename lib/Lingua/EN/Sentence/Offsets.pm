@@ -1,44 +1,31 @@
+use strict; use warnings;
 package Lingua::EN::Sentence::Offsets;
-
-#ABSTRACT: Finds sentence boundaris, and returns their offsets.
-
-#==============================================================================
-#
-# Pragmas
-#
-#==============================================================================
-require 5.005_03;
-use strict;
-use POSIX qw(locale_h);
-#==============================================================================
-#
-# Modules
-#
-#==============================================================================
 require Exporter;
 
-#==============================================================================
-#
-# Public globals
-#
-#==============================================================================
-use vars qw/$VERSION @ISA @EXPORT_OK $EOS $LOC $AP $P $PAP @ABBREVIATIONS/;
+#ABSTRACT: Finds sentence boundaris, and returns their offsets.
+our ($VERSION,@ISA,$EOS,$LOC,$AP,$P,$PAP,@ABBREVIATIONS);
 use Carp qw/cluck/;
+use feature qw/say/;
 
-$VERSION = '0.25';
 
-# LC_CTYPE now in locale "French, Canada, codeset ISO 8859-1"
-$LOC=setlocale(LC_CTYPE, "fr_CA.ISO8859-1"); 
-use locale;
-
-@ISA = qw( Exporter );
-@EXPORT_OK = qw( get_sentences 
-		add_acronyms get_acronyms set_acronyms
-		get_EOS set_EOS);
+use base 'Exporter';
+#@EXPORT_OK = qw/
+our @EXPORT = qw/
+				get_sentences 
+				add_acronyms 
+				get_acronyms 
+				set_acronyms
+				get_EOS 
+				set_EOS
+				offsets2sentences
+				initial_offsets 
+				_get_text
+				adjust_offsets
+			/;
 
 $EOS="\001";
 $P = q/[\.!?]/;			## PUNCTUATION
-$AP = q/(?:'|"|»|\)|\]|\})?/;	## AFTER PUNCTUATION
+$AP = q/(?:'|"|Â»|\)|\]|\})?/;	## AFTER PUNCTUATION
 $PAP = $P.$AP;
 
 my @PEOPLE = ( 'jr', 'mr', 'mrs', 'ms', 'dr', 'prof', 'sr', "sens?", "reps?", 'gov',
@@ -57,26 +44,25 @@ my @PLACES = ( 'arc', 'al', 'ave', "blv?d", 'cl', 'ct', 'cres', 'dr', "expy?",
 		'Mich', 'Minn', 'Miss', 'Mo', 'Mont', 'Neb', 'Nebr' , 'Nev',
 		'Mex', 'Okla', 'Ok', 'Ore', 'Penna', 'Penn', 'Pa'  , 'Dak',
 		'Tenn', 'Tex', 'Ut', 'Vt', 'Va', 'Wash', 'Wis', 'Wisc', 'Wy',
-		'Wyo', 'USAFA', 'Alta' , 'Man', 'Ont', 'Qué', 'Sask', 'Yuk');
+		'Wyo', 'USAFA', 'Alta' , 'Man', 'Ont', 'QuÃ©', 'Sask', 'Yuk');
 my @MONTHS = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec','sept');
 my @MISC = ( 'vs', 'etc', 'no', 'esp' );
 
 @ABBREVIATIONS = (@PEOPLE, @ARMY, @INSTITUTES, @COMPANIES, @PLACES, @MONTHS, @MISC ); 
 
-
-#==============================================================================
-#
-# Public methods
-#
-#==============================================================================
-
-#------------------------------------------------------------------------------
-# get_sentences - takes text input and splits it into sentences.
+# 
 # A regular expression cuts viciously the text into sentences, 
 # and then a list of rules (some of them consist of a list of abbreviations)
 # is applied on the marked text in order to fix end-of-sentence markings on 
 # places which are not indeed end-of-sentence.
 #------------------------------------------------------------------------------
+
+=head2 get_sentences 
+
+Takes text input and splits it into sentences.
+
+=cut
+
 sub get_sentences {
 	my ($text)=@_;
 	return [] unless defined $text;
@@ -88,84 +74,36 @@ sub get_sentences {
 	return $cleaned_sentences;
 }
 
-#------------------------------------------------------------------------------
-# add_acronyms - user can add a list of acronyms/abbreviations.
-#------------------------------------------------------------------------------
+=head2 add_acronyms 
+
+user can add a list of acronyms/abbreviations.
+
+=cut
+
 sub add_acronyms {
 	push @ABBREVIATIONS, @_;
 }
 
-#------------------------------------------------------------------------------
-# get_acronyms - get defined list of acronyms.
-#------------------------------------------------------------------------------
+
+=head2 get_acronyms
+
+get defined list of acronyms.
+
+=cut
+
 sub get_acronyms {
 	return @ABBREVIATIONS;
 }
 
-#------------------------------------------------------------------------------
-# set_acronyms - run over the predefined acronyms list with your own list.
-#------------------------------------------------------------------------------
+=head2 set_acronyms
+
+run over the predefined acronyms list with your own list.
+
+=cut
+
 sub set_acronyms {
 	@ABBREVIATIONS=@_;
 }
-
-#------------------------------------------------------------------------------
-# get_EOS - get the value of the $EOS (end-of-sentence mark).
-#------------------------------------------------------------------------------
-sub get_EOS {
-	return $EOS;
-}
-
-#------------------------------------------------------------------------------
-# set_EOS - set the value of the $EOS (end-of-sentence mark).
-#------------------------------------------------------------------------------
-sub set_EOS {
-	my ($new_EOS) = @_;
-	if (not defined $new_EOS) {
-		cluck "Won't set \$EOS to undefined value!\n";
-		return $EOS;
-	}
-	return $EOS = $new_EOS;
-}
-
-#------------------------------------------------------------------------------
-# set_locale - set the value of the locale.
-#
-#		Revceives language locale in the form
-#			language.country.character-set
-#		for example:
-#				"fr_CA.ISO8859-1"
-#		for Canadian French using character set ISO8859-1.
-#
-#		Returns a reference to a hash containing the current locale 
-#		formatting values.
-#		Returns undef if got undef.
-#
-#
-#               The following will set the LC_COLLATE behaviour to
-#               Argentinian Spanish. NOTE: The naming and avail­
-#               ability of locales depends on your operating sys­
-#               tem. Please consult the perllocale manpage for how
-#               to find out which locales are available in your
-#               system.
-#
-#                       $loc = set_locale( "es_AR.ISO8859-1" );
-#
-#
-#		This actually does this:
-#
-#			$loc = setlocale( LC_ALL, "es_AR.ISO8859-1" );
-#------------------------------------------------------------------------------
-sub set_locale {
-	my ($new_locale) = @_;
-	if (not defined $new_locale) {
-		cluck "Won't set locale to undefined value!\n";
-		return;
-	}
-	$LOC = setlocale(LC_CTYPE, $new_locale); 
-	return $LOC;
-}
-
 
 #==============================================================================
 #
@@ -230,18 +168,35 @@ sub split_unsplit_stuff {
 	return $text;
 }
 
-sub clean_sentences {
-	my ($sentences) = @_;
-		my $cleaned_sentences;
-		foreach my $s (@$sentences) {
-			next if not defined $s;
-			next if $s!~m/\w+/;
-			$s=~s/^\s*//;
-			$s=~s/\s*$//;
-##			$s=~s/\s+/ /g;
-			push @$cleaned_sentences,$s;
-		}
-	return $cleaned_sentences;
+# sub clean_sentences {
+# 	my ($sentences) = @_;
+# 		my $cleaned_sentences;
+# 		foreach my $s (@$sentences) {
+# 			next if not defined $s;
+# 			next if $s!~m/\w+/;
+# 			$s=~s/^\s*//;
+# 			$s=~s/\s*$//;
+# ##			$s=~s/\s+/ /g;
+# 			push @$cleaned_sentences,$s;
+# 		}
+# 	return $cleaned_sentences;
+# }
+
+sub adjust_offsets {
+	my ($text,$offsets) = @_;
+	my $new_offsets = [];
+	foreach (@$offsets){
+		my $start  = $_->[0];
+		my $end    = $_->[1];
+		my $length = $end - $start;
+		my $s = substr($text,$start,$length);
+		next if $s !~ /\w+/;
+		$s =~ /^(\s*).*?(\s*)$/;
+		if(defined($1)){ $start += length($1); }
+		if(defined($2)){ $end   -= length($2); }
+		push @$new_offsets, [$start, $end];
+	}
+	return $new_offsets;
 }
 
 sub first_sentence_breaking {
@@ -249,6 +204,71 @@ sub first_sentence_breaking {
 	$text=~s/\n\s*\n/$EOS/gs;	## double new-line means a different sentence.
 	$text=~s/($PAP\s)/$1$EOS/gs;
 	$text=~s/(\s\w$P)/$1$EOS/gs; # breake also when single letter comes before punc.
+	return $text;
+}
+
+=head2 initial_offsets
+
+First naive delimitation of sentences
+
+=cut
+
+sub initial_offsets {
+	my ($text) = @_;
+	my $offsets = [];
+	my $end;
+	my $text_end = length($text);
+
+	my $start = 0;
+	#while($text =~ /(\n\s*\n)|$PAP\s()|\s\w$P()/gs){
+	while($text =~ /(\n\s*\n)|$PAP(\s+)|\s\w$P()/gs){
+
+		## double new-line means a different sentence
+		if(defined($1)){
+			push @$offsets, [$start, $-[1]];
+			$start = $+[1];
+		}
+
+		## punctuation+after_punct followed by space
+		elsif(defined($2)){
+			push @$offsets, [$start, $-[2]];
+			$start = $+[2];
+		}
+
+		## break also when single letter comes before punc.
+		elsif(defined($3)){
+			push @$offsets, [$start, $-[3]];
+			$start = $+[3];
+		}
+	}
+
+	push @$offsets, [ $start, $text_end ]
+		unless substr($text,$start,$text_end-$start) =~ /^\s*$/;
+
+	return $offsets;
+}
+
+=head2 offsets2sentences
+
+Given a list of sentence boundaries offsets and a text, returns an array with the text split into sentences.
+
+=cut
+
+sub offsets2sentences {
+	my ($text, $offsets) = @_;
+	my $sentences = [];
+	foreach my $o ( sort {$a->[0] <=> $b->[0]} @$offsets) {
+		my $start = $o->[0];
+		my $length = $o->[1]-$o->[0];
+		push @$sentences, substr($text,$start,$length);
+	}
+	return $sentences;
+}
+
+sub _get_text {
+	open my $fh, '<', 't/text';
+	my $text = join '', <$fh>;
+	close $fh;
 	return $text;
 }
 
