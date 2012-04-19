@@ -160,7 +160,7 @@ sub set_locale {
 	my ($new_locale) = @_;
 	if (not defined $new_locale) {
 		cluck "Won't set locale to undefined value!\n";
-		return undef;
+		return;
 	}
 	$LOC = setlocale(LC_CTYPE, $new_locale); 
 	return $LOC;
