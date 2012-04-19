@@ -3,6 +3,8 @@ package Lingua::EN::Sentence::Offsets;
 require Exporter;
 
 #ABSTRACT: Finds sentence boundaris, and returns their offsets.
+
+
 my ($EOS,$AP,$P,$PAP,@ABBREVIATIONS);
 use Carp qw/cluck/;
 use feature qw/say/;
@@ -17,6 +19,7 @@ our @EXPORT = qw/
 				get_acronyms 
 				set_acronyms
 			/;
+
 
 $EOS="\001";$P = q/[\.!?]/;$AP = q/(?:'|"|»|\)|\]|\})?/;$PAP = $P.$AP;
 
@@ -42,7 +45,7 @@ my @MISC = ( 'vs', 'etc', 'no', 'esp' );
 
 @ABBREVIATIONS = (@PEOPLE, @ARMY, @INSTITUTES, @COMPANIES, @PLACES, @MONTHS, @MISC ); 
 
-=head2 get_offsets
+=method get_offsets
 
 Takes text input and returns reference to array containin pairs of character
 offsets, corresponding to the sentences start and end positions.
@@ -60,7 +63,7 @@ sub get_offsets {
 }
 
 
-=head2 get_sentences 
+=method get_sentences 
 
 Takes text input and splits it into sentences.
 
@@ -73,7 +76,7 @@ sub get_sentences {
 	return $sentences;
 }
 
-=head2 add_acronyms 
+=method add_acronyms 
 
 user can add a list of acronyms/abbreviations.
 
@@ -84,7 +87,7 @@ sub add_acronyms {
 }
 
 
-=head2 get_acronyms
+=method get_acronyms
 
 get defined list of acronyms.
 
@@ -94,7 +97,7 @@ sub get_acronyms {
 	return @ABBREVIATIONS;
 }
 
-=head2 set_acronyms
+=method set_acronyms
 
 run over the predefined acronyms list with your own list.
 
@@ -104,7 +107,7 @@ sub set_acronyms {
 	@ABBREVIATIONS=@_;
 }
 
-=head2 remove_false_eos
+=method remove_false_eos
 
 =cut
 
@@ -160,7 +163,7 @@ sub _merge_forward {
 	#splice @$offsets, $i, 1;
 }
 
-=head2 split_unsplit_stuff
+=method split_unsplit_stuff
 
 Finds additional split points in the middle of previously defined sentences.
 
@@ -213,7 +216,7 @@ sub _split_sentence {
 	push $offsets, [$start2, $end2];
 }
 
-=head2 adjust_offsets 
+=method adjust_offsets 
 
 Minor adjusts to offsets (leading/trailing whitespace, etc)
 
@@ -240,7 +243,7 @@ sub adjust_offsets {
 	for(my $i=0; $i<$size; $i++){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
 }
 
-=head2 initial_offsets
+=method initial_offsets
 
 First naive delimitation of sentences
 
@@ -281,7 +284,7 @@ sub initial_offsets {
 	return $offsets;
 }
 
-=head2 offsets2sentences
+=method offsets2sentences
 
 Given a list of sentence boundaries offsets and a text, returns an array with the text split into sentences.
 
@@ -299,3 +302,33 @@ sub offsets2sentences {
 }
 
 1;
+
+__END__
+
+=head1 SYNOPSIS
+
+	use Lingua::EN::Sentence::Offsets qw(get_offsets get_sentences);
+	 
+	my $offsets = get_offsets($text);     ## Get the offsets.
+	foreach my $o (@$offsets) {
+		my $start  = $o->[0];
+		my $length = $o->[1]-$o->[0];
+
+		my $sentence = substr($text,$start,$length)  ## Get a sentence.
+		# ...
+	}
+
+	### or
+
+	my $sentences = get_sentences($text);     
+	foreach my $sentence (@$sentences) {
+		## do something with $sentence
+	}
+
+=head1 ACKNOWLEDGEMENTS
+
+Based on the original module L<Lingua::EN::Sentence>, from Shlomo Yona (SHLOMOY)
+
+=head1 SEE ALSO
+
+L<Lingua::EN::Sentence>, L<Text::Sentence>
