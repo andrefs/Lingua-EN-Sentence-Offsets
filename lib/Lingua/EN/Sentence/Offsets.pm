@@ -2,7 +2,7 @@ use strict; use warnings;
 package Lingua::EN::Sentence::Offsets;
 require Exporter;
 
-#ABSTRACT: Finds sentence boundaris, and returns their offsets.
+#ABSTRACT: Finds sentence boundaries, and returns their offsets.
 
 
 my ($EOS,$AP,$P,$PAP,@ABBREVIATIONS);
