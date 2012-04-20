@@ -9,6 +9,7 @@ my ($EOS,$AP,$P,$PAP,@ABBREVIATIONS);
 use Carp qw/cluck/;
 use feature qw/say/;
 use utf8::all;
+use Data::Dump qw/dump/;
 
 use base 'Exporter';
 #@EXPORT_OK = qw/
@@ -20,6 +21,9 @@ our @EXPORT = qw/
 				set_acronyms
 				initial_offsets
 				offsets2sentences
+				remove_false_eos
+				adjust_offsets
+				split_unsplit_stuff
 			/;
 
 
@@ -58,9 +62,9 @@ sub get_offsets {
 	my ($text) = @_;
 	return [] unless defined $text;
 	my $offsets = initial_offsets($text);
-	remove_false_eos($text,$offsets);
-	split_unsplit_stuff($text,$offsets);
-	adjust_offsets($text,$offsets);
+	   $offsets = remove_false_eos($text,$offsets);
+	   $offsets = split_unsplit_stuff($text,$offsets);
+	   $offsets = adjust_offsets($text,$offsets);
 	return $offsets;
 }
 
@@ -127,31 +131,34 @@ sub remove_false_eos {
 		$unsplit = 1 if $s =~ /[^-\w]\w$PAP\s$/s;
 		$unsplit = 1 if $s =~ /[^-\w]\w$P$/s;
 
-		# don't split after a white-space followed by a single letter followed
-		# by a dot followed by another whitespace.
-		$unsplit = 1 if $s =~ /\s\w\.\s+$/;
+		# # don't split after a white-space followed by a single letter followed
+		# # by a dot followed by another whitespace.
+		# $unsplit = 1 if $s =~ /\s\w\.\s+$/;
 
-		# fix: bla bla... yada yada
-		my $t = substr($text,$offsets->[$j][0], $offsets->[$j][1]-$offsets->[$j][0]);
-		$unsplit = 1 if $s =~ /\.\.\.\s*$/s and $t =~ /^\s*[[:lower:]]/s;
+		# # fix: bla bla... yada yada
+		# my $t = substr($text,$offsets->[$j][0], $offsets->[$j][1]-$offsets->[$j][0]);
+		# $unsplit = 1 if $s =~ /\.\.\.\s*$/s and $t =~ /^\s*[[:lower:]]/s;
 
-		# fix "." "?" "!"
-		$unsplit = 1 if $s =~ m{['"]$P['"]\s+$}s;
+		# # fix "." "?" "!"
+		# $unsplit = 1 if $s =~ m{['"]$P['"]\s+$}s;
 
-		## fix where abbreviations exist
-		foreach (@ABBREVIATIONS){ $unsplit = $1 if $s =~ /\b$_$PAP\s$/is; }
+		# ## fix where abbreviations exist
+		# foreach (@ABBREVIATIONS){ $unsplit = $1 if $s =~ /\b$_$PAP\s$/is; }
 
-		# don't break after quote unless its a capital letter.
-		$unsplit = 1 if $s =~ /["']\s*$/s and $t =~ /^\s*[[:lower:]]/s;
+		# # don't break after quote unless its a capital letter.
+		# $unsplit = 1 if $s =~ /["']\s*$/s and $t =~ /^\s*[[:lower:]]/s;
 
-		# don't break: text . . some more text.
-		$unsplit = 1 if $s =~ /\s\.\s$/s and $t =~ /^\s*/s;
+		# # don't break: text . . some more text.
+		# $unsplit = 1 if $s =~ /\s\.\s$/s and $t =~ /^\s*/s;
 
-		$unsplit = 1 if $s =~ /\s$PAP\s$/s;
+		# $unsplit = 1 if $s =~ /\s$PAP\s$/s;
 
 		_merge_forward($offsets,$i) if $unsplit;
 	}
-	for(my $i=$size-1; $i>=0; $i--){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
+	my $new_offsets = [ grep { defined } @$offsets ];
+	return $new_offsets;
+
+	#for(my $i=$size-1; $i>=0; $i--){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
 }
 
 sub _merge_forward {
@@ -176,36 +183,36 @@ sub split_unsplit_stuff {
 	my $size = @$offsets;
 	for(my $i=0; $i<$size-1; $i++){
 		my $start  = $offsets->[$i][0];
-		my $end    = $offsets->[$i][1];
-		my $length = $end-$start;
+		my $length = $offsets->[$i][1]-$start;
 		my $s = substr($text,$start,$length);
 
 		my $split_points = [];
 		while($s =~ /(\D\d+$P)(\s+)/g){
-			$end   = $+[1];
-			$start = $-[2];
-			push @$split_points,[$end,$start];
+			my $end   = $+[1];
+			my $begin = $-[2];
+			push @$split_points,[$start+$end,$start+$begin];
 		}
 		while($s =~ /($PAP\s)(\s*\()/g){
-			$end   = $+[1];
-			$start = $-[2];
-			push @$split_points,[$end,$start];
+			my $end   = $+[1];
+			my $begin = $-[2];
+			push @$split_points,[$start+$end,$start+$begin];
 		}
-		while($s =~ /('\w$P)(\s)/g){
-			$end   = $+[1];
-			$start = $-[2];
-			push @$split_points,[$end,$start];
+		while($s =~ /(\w$P)(\s)/g){
+			my $end   = $+[1];
+			my $begin = $-[2];
+			push @$split_points,[$start+$end,$start+$begin];
 		}
 		while($s =~ /(\sno\.)(\s+)(?!\d)/g){
-			$end   = $+[1];
-			$start = $-[2];
-			push @$split_points,[$end,$start];
+			my $end   = $+[1];
+			my $begin = $-[2];
+			push @$split_points,[$start+$end,$start+$begin];
 		}
 
 		foreach( sort { $a->[0] <=> $b->[0] } @$split_points){
 			_split_sentence($offsets,$i,$_->[0],$_->[1]);
 		}
 	}
+	return $offsets;
 }
 
 
@@ -226,7 +233,6 @@ Minor adjusts to offsets (leading/trailing whitespace, etc)
 
 sub adjust_offsets {
 	my ($text,$offsets) = @_;
-	my $new_offsets = [];
 	my $size = @$offsets;
 	for(my $i=0; $i<$size; $i++){
 		my $start  = $offsets->[$i][0];
@@ -242,7 +248,9 @@ sub adjust_offsets {
 		if(defined($2)){ $end   -= length($2); }
 		$offsets->[$i] = [$start, $end];
 	}
-	for(my $i=$size-1; $i>=0; $i--){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
+	my $new_offsets = [ grep { defined } @$offsets ];
+	return $new_offsets;
+	#for(my $i=$size-1; $i>=0; $i--){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
 }
 
 =method initial_offsets
@@ -279,7 +287,6 @@ sub initial_offsets {
 			$start = $+[3];
 		}
 	}
-
 	push @$offsets, [ $start, $text_end ]
 		unless substr($text,$start,$text_end-$start) =~ /^\s*$/;
 
