@@ -18,6 +18,8 @@ our @EXPORT = qw/
 				add_acronyms 
 				get_acronyms 
 				set_acronyms
+				initial_offsets
+				offsets2sentences
 			/;
 
 
@@ -149,7 +151,7 @@ sub remove_false_eos {
 
 		_merge_forward($offsets,$i) if $unsplit;
 	}
-	for(my $i=0; $i<$size; $i++){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
+	for(my $i=$size-1; $i>=0; $i--){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
 }
 
 sub _merge_forward {
@@ -235,12 +237,12 @@ sub adjust_offsets {
 			delete $offsets->[$i];
 			next;
 		}
-		$s =~ /^(\s*).*?(\s*)$/;
+		$s =~ /^(\s*).*?(\s*)$/s;
 		if(defined($1)){ $start += length($1); }
 		if(defined($2)){ $end   -= length($2); }
 		$offsets->[$i] = [$start, $end];
 	}
-	for(my $i=0; $i<$size; $i++){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
+	for(my $i=$size-1; $i>=0; $i--){ splice @$offsets, $i,1 unless defined($offsets->[$i]); }
 }
 
 =method initial_offsets

@@ -4,12 +4,13 @@ use warnings;
 use Test::More tests => 1;
 use Lingua::EN::Sentence qw/get_sentences/;
 use Lingua::EN::Sentence::Offsets qw/get_sentences/;
+use Data::Dump qw/dump/;
 
 my $text = join '',<DATA>;
-my $s1 = Lingua::EN::Sentence::get_sentences($text);
-my $s2 = Lingua::EN::Sentence::Offsets::get_sentences($text);
+my $expected_s1 = Lingua::EN::Sentence::get_sentences($text);
+my $got_s2 = Lingua::EN::Sentence::Offsets::get_sentences($text);
 
-is_deeply($s2,$s1,"L::EN::S::O vs L::EN::S");
+is_deeply($got_s2,$expected_s1,"L::EN::S::O vs L::EN::S");
 
 __DATA__
 Over the caption December 31st 1999 a crude spaceship flies through space, cruising over and under planets and a man speaks.
@@ -20,7 +21,13 @@ A planet opens up and a huge gorilla starts throwing barrels at the spaceship. I
 And that's how you play the game!
 You stink, loser!
                
-Mr Panucci, a middle-aged balding man wearing a vest, leans over the counter with a pizza box. Hey, Fry. Pizza goin' out! C'mon!! Fry sighs, takes the pizza from him and walks out. New York Street. Fry cycles past people enjoying their New Millennium Eve. A cab pulls up and he sees his girlfriend inside.
+Mr Panucci, a middle-aged balding man
+wearing a vest, leans over the counter
+with a pizza box. Hey, Fry. Pizza goin' out!
+C'mon!! Fry sighs, takes the pizza from him
+and walks out. New York Street. Fry cycles past
+people enjoying their New Millennium Eve. A cab
+pulls up and he sees his girlfriend inside.
 Michelle, baby! Where you going? It's not working out, Fry. I put your stuff out on the sidewalk! Time Lapse. Fry is still on his bike getting more and more depressed.
 I hate my life I hate my life I hate my life.
  
