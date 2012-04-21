@@ -4,7 +4,6 @@ require Exporter;
 
 #ABSTRACT: Finds sentence boundaries, and returns their offsets.
 
-
 my ($EOS,$AP,$P,$PAP,@ABBREVIATIONS);
 use Carp qw/cluck/;
 use feature qw/say/;
@@ -12,8 +11,7 @@ use utf8::all;
 use Data::Dump qw/dump/;
 
 use base 'Exporter';
-#@EXPORT_OK = qw/
-our @EXPORT = qw/
+our @EXPORT_OK = qw/
 				get_sentences 
 				get_offsets
 				add_acronyms 
@@ -336,7 +334,7 @@ __END__
 
 =head1 SYNOPSIS
 
-	use Lingua::EN::Sentence::Offsets qw(get_offsets get_sentences);
+	use Lingua::EN::Sentence::Offsets qw/get_offsets get_sentences/;
 	 
 	my $offsets = get_offsets($text);     ## Get the offsets.
 	foreach my $o (@$offsets) {
