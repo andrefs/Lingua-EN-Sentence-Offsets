@@ -188,7 +188,6 @@ sub split_unsplit_stuff {
 		my $s = substr($text,$start,$length);
 
 		my $split_points = [];
-		say "String: '$s'";
 		while($s =~ /((?:\D|^)\d+$P)(\s+)/g){
 			my $end   = $+[1];
 			my $begin = $-[2];
