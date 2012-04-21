@@ -1,0 +1,20 @@
+#!/usr/bin/env perl 
+
+use strict; use warnings;
+use Lingua::EN::Sentence::Offsets qw/get_sentences/;
+use feature qw/say/;
+use utf8::all;
+use Data::Dump qw/dump/;
+
+
+my $text = join '', <>;
+my $sentences = get_sentences($text);
+
+say '<sentences>';
+for(@$sentences){
+	say "<sentence>$_</sentence>";
+}
+say '</sentences>';
+
+
+
