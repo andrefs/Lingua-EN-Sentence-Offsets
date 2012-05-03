@@ -234,10 +234,10 @@ sub _split_sentence {
 	my $last = $offsets->[$i][1];
 	$offsets->[$i][1] = $end;
 	while(my $p = shift @$split_points){
-		push $offsets, [$start,$p->[0]];
+		push @$offsets, [$start,$p->[0]];
 		$start = $p->[1];
 	}
-	push $offsets, [$start, $last];
+	push @$offsets, [$start, $last];
 }
 
 =method adjust_offsets 
