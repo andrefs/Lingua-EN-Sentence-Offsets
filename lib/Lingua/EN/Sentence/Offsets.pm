@@ -142,7 +142,7 @@ sub remove_false_eos {
 		$unsplit = 1 if $s =~ m{['"]$P['"]\s+$}s;
 
 		## fix where abbreviations exist
-		foreach (@ABBREVIATIONS){ $unsplit = $1 if $s =~ /\b$_$PAP\s$/is; }
+		foreach (@ABBREVIATIONS){ $unsplit = 1 if $s =~ /\b$_$PAP\s$/is; }
 
 		# don't break after quote unless its a capital letter.
 		$unsplit = 1 if $s =~ /["']\s*$/s and $t =~ /^\s*[[:lower:]]/s;
